@@ -3,20 +3,18 @@ session_start();
 include("../config/db.php");
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = $_POST['email'];
+    $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Fetch user by email
-    $res = $conn->query("SELECT * FROM users WHERE email='$email'");
+    // Use email in database, map username field
+    $res = $conn->query("SELECT * FROM users WHERE email='$username'");
     if ($res->num_rows > 0) {
         $user = $res->fetch_assoc();
-        // Verify hashed password
         if (password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['user_id'];
             $_SESSION['role'] = $user['role'];
             $_SESSION['name'] = $user['name'];
 
-            // Redirect based on role
             if ($user['role'] == 'admin') {
                 header("Location: ../admin/dashboard.php");
             } else {
@@ -34,26 +32,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Login - Jai Jogai Dairy Equipments</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 30px; }
-        input { padding: 8px; width: 250px; margin-bottom: 10px; }
-        button { padding: 10px 20px; }
-        .error { color: red; margin-bottom: 10px; }
-    </style>
+<meta charset="UTF-8">
+<title>Login - Jai Jogai Dairy Equipments</title>
+<style>
+    body { font-family: Arial; padding: 30px; }
+    input { padding: 8px; width: 250px; margin-bottom: 10px; }
+    button { padding: 10px 20px; }
+    .error { color: red; margin-bottom: 10px; }
+</style>
 </head>
 <body>
-    <h2>Login</h2>
-    <?php if(isset($error)) echo "<p class='error'>$error</p>"; ?>
-    <form method="post" autocomplete="on">
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" placeholder="Email" autocomplete="email" required><br>
+<h2>Login</h2>
+<?php if(isset($error)) echo "<p class='error'>$error</p>"; ?>
+<form method="post" autocomplete="on">
+    <label for="username">Email:</label><br>
+    <input type="text" name="username" id="username" placeholder="Email" autocomplete="username" required><br>
 
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" required><br>
+    <label for="password">Password:</label><br>
+    <input type="password" name="password" id="password" placeholder="Password" autocomplete="current-password" required><br>
 
-        <button type="submit">Login</button>
-    </form>
+    <button type="submit">Login</button>
+</form>
 </body>
 </html>
