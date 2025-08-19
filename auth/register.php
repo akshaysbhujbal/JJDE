@@ -4,7 +4,7 @@ include("../config/db.php");
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST['name'];
     $email = $_POST['email'];
-    $password = md5($_POST['password']); // simple hash
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // secure hash
     $role = 'admin';
 
     $conn->query("INSERT INTO users (name,email,password,role) VALUES ('$name','$email','$password','$role')");
