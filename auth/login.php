@@ -4,43 +4,36 @@ include("../config/db.php");
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
-    $password = $_POST['password'];
+    $password = md5($_POST['password']); // hash entered password
 
-    $sql = "SELECT * FROM users WHERE email='$email' AND status='active'";
-    $result = $conn->query($sql);
+    $res = $conn->query("SELECT * FROM users WHERE email='$email' AND password='$password'");
+    if ($res->num_rows > 0) {
+        $user = $res->fetch_assoc();
+        $_SESSION['user_id'] = $user['user_id'];
+        $_SESSION['role'] = $user['role'];
+        $_SESSION['name'] = $user['name'];
 
-    if ($result->num_rows == 1) {
-        $row = $result->fetch_assoc();
-        if (password_verify($password, $row['password'])) {
-            $_SESSION['user_id'] = $row['user_id'];
-            $_SESSION['role'] = $row['role'];
-
-            if ($row['role'] == 'admin') {
-                header("Location: ../admin/dashboard.php");
-            } else {
-                header("Location: ../manager/dashboard.php");
-            }
-            exit();
+        if ($user['role'] == 'admin') {
+            header("Location: ../admin/dashboard.php");
         } else {
-            $error = "Invalid Password!";
+            header("Location: ../manager/dashboard.php");
         }
+        exit();
     } else {
-        $error = "User not found!";
+        $error = "Invalid email or password!";
     }
 }
 ?>
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Login - Jai Jogai Dairy Equipments</title>
-</head>
+<head><title>Login</title></head>
 <body>
-    <h2>Login</h2>
-    <?php if (isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
-    <form method="post">
-        <input type="email" name="email" placeholder="Email" required><br><br>
-        <input type="password" name="password" placeholder="Password" required><br><br>
-        <button type="submit">Login</button>
-    </form>
+<h2>Login</h2>
+<?php if(isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
+<form method="post">
+    <input type="email" name="email" placeholder="Email" required><br><br>
+    <input type="password" name="password" placeholder="Password" required><br><br>
+    <button type="submit">Login</button>
+</form>
 </body>
 </html>
