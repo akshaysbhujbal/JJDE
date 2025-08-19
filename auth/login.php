@@ -3,32 +3,26 @@ session_start();
 include("../config/db.php");
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Match these names with form 'name' attributes
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Fetch user from database
-    $res = $conn->query("SELECT * FROM users WHERE email='$email'");
+    // Fetch user by email
+    $res = $conn->query("SELECT * FROM users WHERE email='$email' AND password='$password'");
     if ($res->num_rows > 0) {
         $user = $res->fetch_assoc();
-        // Verify password
-        if (password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['user_id'];
-            $_SESSION['role'] = $user['role'];
-            $_SESSION['name'] = $user['name'];
+        $_SESSION['user_id'] = $user['user_id'];
+        $_SESSION['role'] = $user['role'];
+        $_SESSION['name'] = $user['name'];
 
-            // Redirect based on role
-            if ($user['role'] == 'admin') {
-                header("Location: ../admin/dashboard.php");
-            } else {
-                header("Location: ../manager/dashboard.php");
-            }
-            exit();
+        // Redirect based on role
+        if ($user['role'] == 'admin') {
+            header("Location: ../admin/dashboard.php");
         } else {
-            $error = "Invalid password!";
+            header("Location: ../manager/dashboard.php");
         }
+        exit();
     } else {
-        $error = "Email not found!";
+        $error = "Invalid email or password!";
     }
 }
 ?>
