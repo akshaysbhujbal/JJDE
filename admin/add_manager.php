@@ -1,7 +1,11 @@
 <?php
 session_start();
 include("../config/db.php");
-
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
+    die("Access Denied"); // Or redirect to login page
+    // header("Location: ../auth/login.php");
+    // exit();
+}
 // Only admin allowed
 if ($_SESSION['role'] != 'admin') {
     die("Access Denied");
