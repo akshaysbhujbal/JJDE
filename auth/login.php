@@ -4,23 +4,27 @@ include("../config/db.php");
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
-    $password = md5($_POST['password']); // hash entered password
+    $password = $_POST['password'];
 
-    $res = $conn->query("SELECT * FROM users WHERE email='$email' AND password='$password'");
+    $res = $conn->query("SELECT * FROM users WHERE email='$email'");
     if ($res->num_rows > 0) {
         $user = $res->fetch_assoc();
-        $_SESSION['user_id'] = $user['user_id'];
-        $_SESSION['role'] = $user['role'];
-        $_SESSION['name'] = $user['name'];
+        if (password_verify($password, $user['password'])) { // verify hashed password
+            $_SESSION['user_id'] = $user['user_id'];
+            $_SESSION['role'] = $user['role'];
+            $_SESSION['name'] = $user['name'];
 
-        if ($user['role'] == 'admin') {
-            header("Location: ../admin/dashboard.php");
+            if ($user['role'] == 'admin') {
+                header("Location: ../admin/dashboard.php");
+            } else {
+                header("Location: ../manager/dashboard.php");
+            }
+            exit();
         } else {
-            header("Location: ../manager/dashboard.php");
+            $error = "Invalid password!";
         }
-        exit();
     } else {
-        $error = "Invalid email or password!";
+        $error = "Email not found!";
     }
 }
 ?>
