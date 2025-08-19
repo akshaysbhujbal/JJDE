@@ -5,8 +5,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     exit();
 }
 
-include("../includes/header.php");
-include("../includes/navbar.php");
+include("/header.php");
+include("/navbar.php");
 ?>
 
 <!DOCTYPE html>
@@ -34,5 +34,5 @@ include("../includes/navbar.php");
 </html>
 
 <?php
-include("../includes/footer.php");
+include("/footer.php");
 ?>
